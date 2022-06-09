@@ -12,7 +12,6 @@ password = "a"
 
 def action(request):
     action = request.GET['action']
-    #https://int.garageclub.es?action=create&plate=E2323FRW&make=AUDI&model=RS4
     if action == "create":
         plate = request.GET['plate']
         make = request.GET['make']
@@ -42,6 +41,11 @@ def action(request):
         plate = request.GET['plate']
         payload = delivered(request,plate)
 
+        return HttpResponse(json.dumps(payload), content_type="application/json")
+
+    else:
+        payload = {}
+        payload['Error'] = "Your action is not correct"
         return HttpResponse(json.dumps(payload), content_type="application/json")
 
 # 1
@@ -255,12 +259,3 @@ def delivered(request,plate):
 
 
 
-def chk(request):
-    payload={}
-    payload['Chk'] = "Hello"
-    print(request)
-    payload['Deliver'] = request.GET['action']
-    payload['Plate'] = request.GET['plate']
-
-    #http://localhost:8000/chk/?action=deliver&plate=123LEP&make=AUDI&model=2022
-    return HttpResponse(json.dumps(payload), content_type="application/json")
