@@ -3,9 +3,9 @@ import json
 from django.http import HttpResponse
 import requests
 
-api_url = "https://wal2.teamwork.com/"
-username = "twp_rpbDc0R4Bm8wcaTKtd8Z2t51rukw"
-password = "z"
+api_url = "https://garageclub2.eu.teamwork.com/"
+username = "twp_dTNCmN8bk2fSi6FanbR7OJT8uqVW_eu"
+password = "a"
 
 # Create your views here.
 
@@ -13,11 +13,11 @@ password = "z"
 # 1
 def create_task(plate,make,model):
 
-    url = api_url+"/tasklists/2643322/tasks.json"
+    url = api_url+"/tasklists/1713276/tasks.json"
     payload = {  
             "todo-item": {
                 "content": plate[1:]+"-"+make+" "+model, 
-                "responsible-party-id": "417133",
+                "responsible-party-id": "457025",
                 } 
             }
     response = requests.post(url, auth=(username, password), data=json.dumps(payload, indent = 3))
@@ -28,8 +28,8 @@ def create_sub_tak(id,plate,make,model,payload):
     url = api_url+"/tasks/"+id+".json"
     payload = {
         "todo-item": {
-            "content": plate[1:]+"-"+make+" "+model, 
-            "responsible-party-id": "417133",
+            "content": plate[1:]+"-"+make+" "+model,
+            "responsible-party-id": "466716",
             "tags": "PT"
         }
     }
@@ -39,8 +39,19 @@ def create_sub_tak(id,plate,make,model,payload):
     payload = {
         "todo-item": {
             "content": plate[1:]+"-"+make+" "+model, 
-            "responsible-party-id": "417133",
+            "responsible-party-id": "452385",
             "tags": "LIMPIEZA"
+        }
+    }
+    response = requests.post(url, auth=(username, password), data= json.dumps(payload, indent = 4))
+    payload['sub-task2-response'] = response.json()
+
+
+    payload = {
+        "todo-item": {
+            "content": plate[1:]+"-"+make+" "+model, 
+            "responsible-party-id": "452387",
+            "tags": "Pintura"
         }
     }
     response = requests.post(url, auth=(username, password), data= json.dumps(payload, indent = 4))
@@ -49,8 +60,8 @@ def create_sub_tak(id,plate,make,model,payload):
     payload = {
         "todo-item": {
             "content": plate[1:]+"-"+make+" "+model, 
-            "responsible-party-id": "417133",
-            "tags": "VIDEO"
+            "responsible-party-id": "466639",
+            "tags": "Video"
         }
     }
     response = requests.post(url, auth=(username, password), data= json.dumps(payload, indent = 4))
@@ -77,7 +88,7 @@ def create_taask(request,plate,make,model):
 
 #2
 def get_all_tasks_of_project():
-    url = api_url+"/projects/605771/tasks.json"
+    url = api_url+"/projects/446109/tasks.json"
     response = requests.get(url, auth=(username, password))
     return(response.json())
 
@@ -94,7 +105,7 @@ def update_task(task_id):
     url = api_url+"/tasks/"+task_id+".json"
     payload = {  
             "todo-item": { 
-                "todo-list-id": "2643323"
+                "todo-list-id": "1713321"
                 } 
             }
     response = requests.put(url, auth=(username, password), data=json.dumps(payload, indent = 2))
@@ -106,7 +117,7 @@ def get_sub_task(task_id):
     response = requests.get(url, auth=(username, password))
     temp = response.json()
     for sub_t in temp['todo-items']:
-        if sub_t['tags'][0]['name'] == "VIDEO":
+        if sub_t['tags'][0]['name'] == "Video":
             return sub_t['id']
     return(None)
 
@@ -156,7 +167,7 @@ def update_task_available(task_id):
     url = api_url+"/tasks/"+task_id+".json"
     payload = {  
             "todo-item": { 
-                "todo-list-id": "2643322"
+                "todo-list-id": "1713276"
                 } 
             }
     response = requests.put(url, auth=(username, password), data=json.dumps(payload, indent = 2))
@@ -168,8 +179,8 @@ def video_sub_task(id,plate,make,model):
     payload = {
         "todo-item": {
             "content": plate[1:]+"-"+make+" "+model, 
-            "responsible-party-id": "417133",
-            "tags": "VIDEO"
+            "responsible-party-id": "466639",
+            "tags": "Video"
         }
     }
     response = requests.post(url, auth=(username, password), data= json.dumps(payload, indent = 4))
@@ -202,7 +213,7 @@ def delivered(request,plate):
         if plate[1:] == temp[0]:
             if t['parentTaskId'] == "":
                 payload['Task_id'] = t['id']
-                if 2643322 == t['todo-list-id']:
+                if 1682372 == t['todo-list-id']:
                     payload['Update_Response'] = update_task(str(payload['Task_id']))
             else:
                 payload['Complete_Response'] = update_sub_task(str(t['id']))
