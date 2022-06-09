@@ -10,6 +10,40 @@ password = "a"
 # Create your views here.
 
 
+def action(request):
+    action = request.GET['action']
+    #https://int.garageclub.es?action=create&plate=E2323FRW&make=AUDI&model=RS4
+    if action == "create":
+        plate = request.GET['plate']
+        make = request.GET['make']
+        model = request.GET['model']
+
+        payload = create_taask(request,plate,make,model)
+
+        return HttpResponse(json.dumps(payload), content_type="application/json")
+    
+    elif action == "reserved":
+        plate = request.GET['plate']
+        make = request.GET['make']
+        model = request.GET['model']
+        payload = reserved(request,plate,make,model)
+
+        return HttpResponse(json.dumps(payload), content_type="application/json")
+
+    elif action == "available":
+        plate = request.GET['plate']
+        make = request.GET['make']
+        model = request.GET['model']
+        payload = available(request,plate,make,model)
+
+        return HttpResponse(json.dumps(payload), content_type="application/json")
+
+    elif action == "delivered":
+        plate = request.GET['plate']
+        payload = delivered(request,plate)
+
+        return HttpResponse(json.dumps(payload), content_type="application/json")
+
 # 1
 def create_task(plate,make,model):
 
@@ -21,7 +55,7 @@ def create_task(plate,make,model):
                 } 
             }
     response = requests.post(url, auth=(username, password), data=json.dumps(payload, indent = 3))
-
+    print(response.json(),"*******************************")
     return(response.json())
 
 def create_sub_tak(id,plate,make,model,payload):
@@ -83,8 +117,7 @@ def create_taask(request,plate,make,model):
     payload = create_sub_tak(task_res['id'],plate,make,model,payload)
 
 
-
-    return HttpResponse(json.dumps(payload), content_type="application/json")
+    return payload
 
 #2
 def get_all_tasks_of_project():
@@ -139,7 +172,7 @@ def delete_sub_task(task_id):
     response = requests.delete(url, auth=(username, password))
     print(response.json())
 
-def reserved(request, plate):
+def reserved(request,plate,make,model):
 
     temp_all_tasks = get_all_tasks_of_project()
     temp_task_id = get_id_of_task_by_plate(temp_all_tasks,plate)
@@ -149,10 +182,10 @@ def reserved(request, plate):
 
     if payload['Task_id'] == None:
         payload['status'] = "Not Found"
-        task_res = create_task(plate,"Audi","2022")
+        task_res = create_task(plate,make,model)
         payload['Task_id'] = task_res['id']
 
-        create_sub_tak(payload['Task_id'],plate,"Audi","2022",payload)
+        create_sub_tak(payload['Task_id'],plate,make,model,payload)
        
     payload['Update_Response'] = update_task(str(payload['Task_id']))
     temp_sub_tasks_id = get_sub_task(str(payload['Task_id']))
@@ -160,7 +193,7 @@ def reserved(request, plate):
     if temp_sub_tasks_id != None:
         print(temp_sub_tasks_id,"*******id in")
         payload['sub_tak_Update_Response'] = delete_sub_task(str(temp_sub_tasks_id))
-    return HttpResponse(json.dumps(payload), content_type="application/json")
+    return payload
 
 #3
 def update_task_available(task_id):
@@ -187,7 +220,7 @@ def video_sub_task(id,plate,make,model):
     payload['sub-task3-response'] = response.json()
     
 
-def available(request,plate):
+def available(request,plate,make,model):
     temp_all_tasks = get_all_tasks_of_project()
     temp_task_id = get_id_of_task_by_plate(temp_all_tasks,plate)
 
@@ -199,9 +232,9 @@ def available(request,plate):
     else:  
         payload['Update_Response'] = update_task_available(str(payload['Task_id']))
 
-        payload['sub_tak_Update_Response'] = video_sub_task(str(payload['Task_id']),plate,"AUDI","R09")
+        payload['sub_tak_Update_Response'] = video_sub_task(str(payload['Task_id']),plate,make,model)
             
-    return HttpResponse(json.dumps(payload), content_type="application/json")
+    return payload
 
 
 #4
@@ -218,8 +251,16 @@ def delivered(request,plate):
             else:
                 payload['Complete_Response'] = update_sub_task(str(t['id']))
     payload['MAin_task_Complete_Response'] = update_sub_task(str(payload['Task_id']))
+    return payload
+
+
+
+def chk(request):
+    payload={}
+    payload['Chk'] = "Hello"
+    print(request)
+    payload['Deliver'] = request.GET['action']
+    payload['Plate'] = request.GET['plate']
+
+    #http://localhost:8000/chk/?action=deliver&plate=123LEP&make=AUDI&model=2022
     return HttpResponse(json.dumps(payload), content_type="application/json")
-
-
-
- 

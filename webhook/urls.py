@@ -4,13 +4,17 @@ from . import views
 
 urlpatterns = [
 
-    path('create-task/<str:plate>/<str:make>/<str:model>/',views.create_taask,name='create_taask'),
+    path('create-task/',views.create_taask,name='create_taask'),
 
-    path('reserved/<str:plate>/',views.reserved,name='reserved'),
+    path('reserved/',views.reserved,name='reserved'),
 
-    path('available/<str:plate>/',views.available,name="available"),
+    path('available/',views.available,name="available"),
 
-    path('delivered/<str:plate>/',views.delivered,name="delivered"),
+    path('delivered/',views.delivered,name="delivered"),
+
+    path('chk/', views.chk, name="chk"),
+
+    path('', views.action, name="action")
 
 ]
 
@@ -22,3 +26,13 @@ urlpatterns = [
 # http://localhost:8000/available/E789LEP/
 
 # http://localhost:8000/delivered/E789LEP/
+
+
+
+# http://localhost:8000/?action=create&plate=E2323FRW&make=AUDI&model=RS4
+
+# http://localhost:8000/?action=reserved&plate=E2323FRW&make=AUDI&model=RS4
+
+# http://localhost:8000/?action=available&plate=E2323FRW&make=AUDI&model=RS4
+
+# http://localhost:8000/?action=delivered&plate=E2323FRW
