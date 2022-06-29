@@ -23,3 +23,14 @@ urlpatterns = [
 # http://localhost:8000/?action=available&plate=E2323FRW&make=AUDI&model=RS4
 
 # http://localhost:8000/?action=delivered&plate=E2323FRW
+
+
+#################
+
+#http://164.92.144.88:8004/?action=create&plate=E2323FRW&make=AUDI&model=RS4
+
+#http://164.92.144.88:8004/?action=reserved&plate=E2323FRW&make=AUDI&model=RS4
+
+#http://164.92.144.88:8004/?action=available&plate=E2323FRW&make=AUDI&model=RS4
+
+#http://164.92.144.88:8004/?action=delivered&plate=E2323FRW

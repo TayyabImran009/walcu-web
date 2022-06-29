@@ -51,7 +51,7 @@ def action(request):
 # 1
 def create_task(plate,make,model):
 
-    url = api_url+"/tasklists/1713276/tasks.json"
+    url = api_url+"/tasklists/1682372/tasks.json"
     payload = {  
             "todo-item": {
                 "content": plate[1:]+"-"+make+" "+model, 
@@ -125,7 +125,7 @@ def create_taask(request,plate,make,model):
 
 #2
 def get_all_tasks_of_project():
-    url = api_url+"/projects/446109/tasks.json"
+    url = api_url+"/projects/435619/tasks.json"
     response = requests.get(url, auth=(username, password))
     return(response.json())
 
@@ -142,7 +142,7 @@ def update_task(task_id):
     url = api_url+"/tasks/"+task_id+".json"
     payload = {  
             "todo-item": { 
-                "todo-list-id": "1713321"
+                "todo-list-id": "1686407"
                 } 
             }
     response = requests.put(url, auth=(username, password), data=json.dumps(payload, indent = 2))
@@ -204,7 +204,7 @@ def update_task_available(task_id):
     url = api_url+"/tasks/"+task_id+".json"
     payload = {  
             "todo-item": { 
-                "todo-list-id": "1713276"
+                "todo-list-id": "1682372"
                 } 
             }
     response = requests.put(url, auth=(username, password), data=json.dumps(payload, indent = 2))
