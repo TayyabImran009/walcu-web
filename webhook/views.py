@@ -270,4 +270,21 @@ def delivered(request,plate):
         temp = response.json()
         count += 1
     payload['MAin_task_Complete_Response'] = update_sub_task(str(payload['Task_id']))
+
+    response = requests.get(url, auth=(username, password), params={'page': 1})
+    temp = response.json()
+    count = 2
+    while(temp['todo-items']):
+        for t in temp['todo-items']:
+            if re.search(plate[1:], t['content']):
+                if t['parentTaskId'] == "":
+                    payload['Task_id'] = t['id']
+                    if 1682372 == t['todo-list-id']:
+                        payload['Update_Response'] = update_task(str(payload['Task_id']))
+                else:
+                    payload['Complete_Response'] = update_sub_task(str(t['id']))
+        response = requests.get(url, auth=(username, password), params={'page': count})
+        temp = response.json()
+        count += 1
+    payload['MAin_task_Complete_Response'] = update_sub_task(str(payload['Task_id']))
     return payload
