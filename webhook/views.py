@@ -2,6 +2,7 @@ from django.shortcuts import render
 import json
 from django.http import HttpResponse
 import requests
+import re
 
 api_url = "https://garageclub2.eu.teamwork.com/"
 username = "twp_dTNCmN8bk2fSi6FanbR7OJT8uqVW_eu"
@@ -129,13 +130,23 @@ def get_all_tasks_of_project():
     response = requests.get(url, auth=(username, password))
     return(response.json())
 
-def get_id_of_task_by_plate(temp_all_tasks,plate):
+def get_id_of_task_by_plate(plate):
 
-    for t in temp_all_tasks['todo-items']:
-        temp_hold = t['content'].split("-")
-        print(plate[1:],t['id'],temp_hold[0])
-        if plate[1:] == temp_hold[0]:
-            return t['id']
+    url = api_url+"/projects/435619/tasks.json"
+    response = requests.get(url, auth=(username, password), params={'page': 1})
+    temp = response.json()
+    count = 2
+    while(temp['todo-items']):
+        for task in temp['todo-items']:
+            if re.search(plate[1:], task['content']):
+                print("YES,string '{0}' is present in string '{1}'" .format(
+                plate[1:], task['content']))
+                return task['id']
+            else:
+                pass
+        response = requests.get(url, auth=(username, password), params={'page': count})
+        temp = response.json()
+        count += 1
     return None
 
 def update_task(task_id):
@@ -177,9 +188,7 @@ def delete_sub_task(task_id):
     print(response.json())
 
 def reserved(request,plate,make,model):
-
-    temp_all_tasks = get_all_tasks_of_project()
-    temp_task_id = get_id_of_task_by_plate(temp_all_tasks,plate)
+    temp_task_id = get_id_of_task_by_plate(plate)
 
     payload = {}
     payload['Task_id'] = temp_task_id
@@ -225,8 +234,7 @@ def video_sub_task(id,plate,make,model):
     
 
 def available(request,plate,make,model):
-    temp_all_tasks = get_all_tasks_of_project()
-    temp_task_id = get_id_of_task_by_plate(temp_all_tasks,plate)
+    temp_task_id = get_id_of_task_by_plate(plate)
 
     payload = {}
     payload['Task_id'] = temp_task_id
@@ -243,19 +251,23 @@ def available(request,plate,make,model):
 
 #4
 def delivered(request,plate):
-    temp_all_tasks = get_all_tasks_of_project()
     payload = {}
-    for t in temp_all_tasks['todo-items']:
-        temp = t['content'].split("-")
-        if plate[1:] == temp[0]:
-            if t['parentTaskId'] == "":
-                payload['Task_id'] = t['id']
-                if 1682372 == t['todo-list-id']:
-                    payload['Update_Response'] = update_task(str(payload['Task_id']))
-            else:
-                payload['Complete_Response'] = update_sub_task(str(t['id']))
+
+    url = api_url+"/projects/435619/tasks.json"
+    response = requests.get(url, auth=(username, password), params={'page': 1})
+    temp = response.json()
+    count = 2
+    while(temp['todo-items']):
+        for t in temp['todo-items']:
+            if re.search(plate[1:], t['content']):
+                if t['parentTaskId'] == "":
+                    payload['Task_id'] = t['id']
+                    if 1682372 == t['todo-list-id']:
+                        payload['Update_Response'] = update_task(str(payload['Task_id']))
+                else:
+                    payload['Complete_Response'] = update_sub_task(str(t['id']))
+        response = requests.get(url, auth=(username, password), params={'page': count})
+        temp = response.json()
+        count += 1
     payload['MAin_task_Complete_Response'] = update_sub_task(str(payload['Task_id']))
     return payload
-
-
-
